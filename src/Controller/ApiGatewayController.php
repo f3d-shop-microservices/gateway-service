@@ -2,13 +2,14 @@
 
 namespace App\Controller;
 
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ApiGatewayController extends AbstractController
@@ -50,8 +51,10 @@ final class ApiGatewayController extends AbstractController
             );
         } catch (ClientExceptionInterface $e) {
             return new JsonResponse(['error' => 'Product not found'], 404);
-        } catch (Exception $e) {
-            return new JsonResponse(['error' => 'Internal server error'], 500);
+        } catch (TransportExceptionInterface | ServerExceptionInterface | RedirectionExceptionInterface $e) {
+            return new JsonResponse(['error' => 'Internal error while accessing product service'], 500);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => 'Unexpected error'], 500);
         }
     }
 }
