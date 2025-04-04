@@ -24,7 +24,7 @@ final class ApiGatewayController extends AbstractController
     #[Route('/api/register', name: 'app_api_gateway_register', methods: ['POST'])]
     public function proxyRegister(Request $request): Response
     {
-        $response = $this->httpClient->request('POST', $_ENV['AUTH_SVC_HOST'] . '/api/register', [
+        $response = $this->httpClient->request('POST', $_ENV['AUTH_SVC_HOST'] . '/register', [
             'body' => $request->getContent(),
             'headers' => [
                 'Content-Type' => 'application/json',
