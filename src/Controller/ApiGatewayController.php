@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -20,7 +21,41 @@ final class ApiGatewayController extends AbstractController
         $this->httpClient = $httpClient;
     }
 
-    #[Route('/api/products', name: 'app_api_gateway', methods: ['GET'])]
+    #[Route('/api/register', name: 'app_api_gateway_register', methods: ['POST'])]
+    public function proxyRegister(Request $request): Response
+    {
+        $response = $this->httpClient->request('POST', $_ENV['AUTH_SVC_HOST'] . '/api/register', [
+            'body' => $request->getContent(),
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+        ]);
+
+        return new Response(
+            $response->getContent(),
+            $response->getStatusCode(),
+            ['Content-Type' => $response->getHeaders()['content-type'][0]]
+        );
+    }
+
+    #[Route('/api/login', name: 'app_api_gateway_login', methods: ['POST'])]
+    public function proxyLogin(Request $request): Response
+    {
+        $response = $this->httpClient->request('POST', $_ENV['AUTH_SVC_HOST'] . '/api/login', [
+            'body' => $request->getContent(),
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+        ]);
+
+        return new Response(
+            $response->getContent(),
+            $response->getStatusCode(),
+            ['Content-Type' => $response->getHeaders()['content-type'][0]]
+        );
+    }
+
+    #[Route('/api/products', name: 'app_api_gateway_products', methods: ['GET'])]
     public function proxyProducts(): Response
     {
         $response = $this->httpClient->request('GET', $_ENV['PRODUCT_SVC_HOST'] . '/products/all');
