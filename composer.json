@@ -13,11 +13,15 @@
         "symfony/framework-bundle": "6.4.*",
         "symfony/http-client": "6.4.*",
         "symfony/runtime": "6.4.*",
-        "symfony/yaml": "6.4.*"
+        "symfony/yaml": "6.4.*",
+        "f3d/shop-common": "dev-main"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.62"
     },
+    "repositories": [
+        {"type": "vcs", "url": "https://github.com/f3d-shop-microservices/shop-common.git"}
+    ],
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,

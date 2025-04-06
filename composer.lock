@@ -4,8 +4,40 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee59d3a3e082a53ad3dbc3336d8a67a4",
+    "content-hash": "e72ca2c2b953d8c676eacacb5cfe8bb0",
     "packages": [
+        {
+            "name": "f3d/shop-common",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/f3d-shop-microservices/shop-common.git",
+                "reference": "a7423f8a9a68dba41f47ae106b9282fde9ba50f1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/f3d-shop-microservices/shop-common/zipball/a7423f8a9a68dba41f47ae106b9282fde9ba50f1",
+                "reference": "a7423f8a9a68dba41f47ae106b9282fde9ba50f1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/framework-bundle": "^6.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Shop\\Common\\": "src/"
+                }
+            },
+            "description": "Common tools for f3d shop microservices",
+            "support": {
+                "source": "https://github.com/f3d-shop-microservices/shop-common/tree/main",
+                "issues": "https://github.com/f3d-shop-microservices/shop-common/issues"
+            },
+            "time": "2025-04-06T18:55:16+00:00"
+        },
         {
             "name": "psr/cache",
             "version": "3.0.0",
@@ -2898,7 +2930,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "f3d/shop-common": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
