@@ -67,10 +67,62 @@ final class ApiGatewayController extends AbstractController
         );
     }
 
-    #[Route('/api/product/{id}', name: 'app_api_gateway_product', methods: ['GET'])]
+    #[Route('/api/product/{id}', name: 'app_api_gateway_product', methods: ['GET'], priority: 1)]
     public function proxyProduct(string $id): Response
     {
         $url = $_ENV['PRODUCT_SVC_HOST'] . '/product/' . urlencode($id);
+
+        try {
+            $response = $this->httpClient->request('GET', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ]);
+
+            return new Response(
+                $response->getContent(),
+                $response->getStatusCode(),
+                ['Content-Type' => $response->getHeaders()['content-type'][0]]
+            );
+        } catch (ClientExceptionInterface $e) {
+            return new JsonResponse(['error' => 'Product not found'], 404);
+        } catch (TransportExceptionInterface | ServerExceptionInterface | RedirectionExceptionInterface $e) {
+            return new JsonResponse(['error' => 'Internal error while accessing product service'], 500);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => 'Unexpected error'], 500);
+        }
+    }
+
+    #[Route('/api/product/health', name: 'app_api_gateway_product_health', methods: ['GET'], priority: 2)]
+    public function proxyProductHealth(): Response
+    {
+        $url = $_ENV['PRODUCT_SVC_HOST'] . '/health';
+
+        try {
+            $response = $this->httpClient->request('GET', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                ],
+            ]);
+
+            return new Response(
+                $response->getContent(),
+                $response->getStatusCode(),
+                ['Content-Type' => $response->getHeaders()['content-type'][0]]
+            );
+        } catch (ClientExceptionInterface $e) {
+            return new JsonResponse(['error' => 'Product not found'], 404);
+        } catch (TransportExceptionInterface | ServerExceptionInterface | RedirectionExceptionInterface $e) {
+            return new JsonResponse(['error' => 'Internal error while accessing product service'], 500);
+        } catch (\Throwable $e) {
+            return new JsonResponse(['error' => 'Unexpected error'], 500);
+        }
+    }
+
+    #[Route('/api/auth/health', name: 'app_api_gateway_auth_health', methods: ['GET'])]
+    public function proxyAuthHealth(): Response
+    {
+        $url = $_ENV['AUTH_SVC_HOST'] . '/health';
 
         try {
             $response = $this->httpClient->request('GET', $url, [

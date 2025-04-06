@@ -26,7 +26,7 @@ final class AuthTokenListener
             return;
         }
 
-        $publicPaths = ['/api/login', '/api/register'];
+        $publicPaths = ['/api/login', '/api/register', '/api/auth/health', '/api/product/health'];
         foreach ($publicPaths as $path) {
             if (str_starts_with($request->getPathInfo(), $path)) {
                 return;
