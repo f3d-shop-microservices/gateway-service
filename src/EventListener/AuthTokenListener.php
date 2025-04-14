@@ -2,6 +2,8 @@
 
 namespace App\EventListener;
 
+use App\Service\AuthClient;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -12,7 +14,11 @@ final class AuthTokenListener
 {
     private HttpClientInterface $httpClient;
     public function __construct(
-        HttpClientInterface $httpClient
+        HttpClientInterface $httpClient,
+        private readonly AuthClient $authClient,
+
+        #[Autowire('%env(string:API_VERSION_PREFIX)%')]
+        private readonly string $apiVersionPrefix
     ) {
         $this->httpClient = $httpClient;
     }
@@ -26,7 +32,10 @@ final class AuthTokenListener
             return;
         }
 
-        $publicPaths = ['/api/login', '/api/register', '/api/auth/health', '/api/product/health'];
+        $publicPaths = [
+            $this->apiVersionPrefix . '/login',
+            $this->apiVersionPrefix . '/register'
+        ];
         foreach ($publicPaths as $path) {
             if (str_starts_with($request->getPathInfo(), $path)) {
                 return;
@@ -42,13 +51,7 @@ final class AuthTokenListener
         $token = substr($authHeader, 7);
 
         try {
-            $response = $this->httpClient->request('GET', $_ENV['AUTH_SVC_HOST'] . '/api/validate-token', [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $token,
-                ],
-            ]);
-
-            $data = $response->toArray();
+            $data = $this->authClient->validateToken($token);
 
             if (!($data['valid'] ?? false)) {
                 $event->setResponse(new JsonResponse(['error' => 'Invalid token'], 401));
